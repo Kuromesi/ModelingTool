@@ -133,7 +133,7 @@ node_control = new Vue({
             initialize_node_control_panel()
         },
         delete_node() {
-            console.log("node deleted: " + this.clickedNode.name)
+            console.log("node deleted: " + this.clicked_node.name)
             network.deleteSelected()
             initialize_node_control_panel()
         },
@@ -218,16 +218,13 @@ edge_control = new Vue({
             }
         },
         set_edge_type(val) {
-            this.edge_type = val
+            this.selected_edge.edge_type = val
         },
         set_entry(node, graph_name, entry_id, entry_name) {
             this.$set(this.selected_edge[node], 'entry_id', entry_id)
             this.$set(this.selected_edge[node], 'graph_name', graph_name)
             this.$set(this.selected_edge[node], 'entry_name', entry_name)
         }
-    },
-    mounted() {
-        this.entry_list = node_control.entry_list
     }
 })
 
@@ -263,8 +260,10 @@ project_control = new Vue({
                 }).then(function (res) {
                     alert(res.data);
                     project_control.$set(project_control.graphs, project_control.cur_graph, data)
+                    Vue.set(project_control.files, project_control.cur_graph, {})
                     Vue.set(node_control.entry_list, project_control.cur_graph, {})
                     update_entry_list(project_control.graphs[project_control.cur_graph], node_control.entry_list, project_control.cur_graph)
+                    Vue.set(edge_control, "entry_list", node_control.entry_list)
                 })
             }
         },
@@ -291,6 +290,24 @@ project_control = new Vue({
             network = drawGraph(graph.nodes, graph.edges);
             network.on('click', network_click);
         },
+        import_graph(graph) {
+            console.log("import graph " + graph)
+            node_id_map = {}
+            for (i = 0; i < this.graphs[graph].nodes.length; i++) { 
+                node = this.graphs[graph].nodes[i]
+                old_id = node.id
+                Vue.delete(node, "id")
+                new_id = addNode(node)
+                node_id_map[old_id] = new_id[0]
+            }
+            for (i = 0; i < this.graphs[graph].edges.length; i++) {
+                edge = this.graphs[graph].edges[i]
+                edge.from = node_id_map[edge.from]
+                edge.to = node_id_map[edge.to]
+                Vue.delete(edge, "id")
+                addEdge(edge)
+            }
+        },
         load_project() {
             var url = "/model/load_project"
             this.cur_project = this.cur_path
@@ -300,10 +317,14 @@ project_control = new Vue({
                 data: { "cur_project": this.cur_project }
             }).then(function (res) {
                 project_control.graphs = res.data;
+                // reset graph_list and entry_list
+                node_control.graph_list = {}
+                node_control.entry_list = {}
                 for (k in project_control.graphs) {
                     console.log("graphs loaded: " + k)
                     node_control.$set(node_control.graph_list, k, project_control.graphs[k])
                     update_entry_list(project_control.graphs[k], node_control.entry_list, k)
+                    Vue.set(edge_control, "entry_list", node_control.entry_list)
                 }
             })
         },
@@ -324,6 +345,7 @@ project_control = new Vue({
         },
         new_graph() {
             network = drawGraph([], [{}])
+            network.on('click', network_click)
         },
         upper_folder() {
             this.cur_path = ""

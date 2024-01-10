@@ -269,14 +269,21 @@
 </div>
 <div class="container mt-3" id="project-control">
     <div class="row">
-        <div class="col-sm-9">
-            <div>
-            </div>
+        <div class="col-md-1">
             <button class="btn btn-primary" type="button" data-bs-toggle="offcanvas"
                 data-bs-target="#offcanvasScrolling" aria-controls="offcanvasScrolling"
                 @click="list_files('')">List</button>
         </div>
-
+        <div class="col-md-1">
+            <div class="dropdown col-md-2">
+                <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown">
+                    Import
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" v-for="v, k in graphs" @click="import_graph(k)">{[ k ]}</a></li>
+                </ul>
+            </div>
+        </div>
     </div>
     <div class="offcanvas offcanvas-start" data-bs-scroll="true" data-bs-backdrop="false" tabindex="-1"
         id="offcanvasScrolling" aria-labelledby="offcanvasScrollingLabel">

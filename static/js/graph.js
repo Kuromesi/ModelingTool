@@ -1,6 +1,7 @@
 // initialize global variables.
 var edges;
 var nodes;
+var node_id = 0;
 var allNodes;
 var allEdges;
 var nodeColors;
@@ -80,9 +81,9 @@ function drawGraph(in_nodes, in_edges) {
 }
 
 function addNode(in_node) {
-    nodes.update(in_node);
+    return nodes.update(in_node);
 }
 
 function addEdge(in_edge) {
-    edges.update(in_edge);
+    return edges.update(in_edge);
 }

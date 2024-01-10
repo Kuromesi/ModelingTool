@@ -1,7 +1,6 @@
 from flask import Blueprint
 from flask import request, render_template
 import json, os, shutil
-from flask_login import login_required
 
 model = Blueprint('model', __name__, url_prefix="/model")
 @model.route("/", methods=['GET'])
