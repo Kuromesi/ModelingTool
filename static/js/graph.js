@@ -20,12 +20,30 @@ var info = new Vue({
     el: "#network_info",
     delimiters:['{[', ']}'],
     data: {
-            content: {}
+        content: {},
+        display_panel: "information"
+    },
+    methods: {
+        switch_panel() {
+            if (this.display_panel == 'configuration') {
+                this.display_panel = 'information'
+            } else {
+                this.display_panel = 'configuration'
+            }
+        },
     }
 })
+initializeGraph([], [])
+
+function drawGraph(in_nodes, in_edges) {
+    nodes = new vis.DataSet(in_nodes);
+    edges = new vis.DataSet(in_edges);
+    network.setData({nodes: nodes, edges: edges})
+    console.log("successfully update network")
+}
 
 // This method is responsible for drawing the graph, returns the drawn network
-function drawGraph(in_nodes, in_edges) {
+function initializeGraph(in_nodes, in_edges) {
     var container = document.getElementById('mynetwork');
     // parsing and collecting nodes and edges from the python
     
@@ -49,7 +67,8 @@ function drawGraph(in_nodes, in_edges) {
 
     var options = {
         "configure": {
-            "enabled": false
+            "enabled": true,
+            "container": document.getElementById('configure_panel')
         },
         "edges": {
             "color": {
@@ -65,19 +84,60 @@ function drawGraph(in_nodes, in_edges) {
             "hideEdgesOnDrag": false,
             "hideNodesOnDrag": false
         },
-        "physics": {
-            "enabled": true,
-            "stabilization": {
-                "enabled": true,
-                "fit": true,
-                "iterations": 1000,
-                "onlyDynamicEdges": false,
-                "updateInterval": 50
-            }
-        }
+        // "physics": {
+        //     "enabled": false,
+        //     "stabilization": {
+        //         "enabled": true,
+        //         "fit": true,
+        //         "iterations": 1000,
+        //         "onlyDynamicEdges": false,
+        //         "updateInterval": 50
+        //     }
+        // }
     };
     network = new vis.Network(container, data, options);
+    network.on('click', network_click)
+    console.log("network initialized")
     return network;
+}
+
+function network_click(params) {
+    if (params.nodes.length != 0) {
+        var nodeID = params.nodes[0];
+        if (nodeID) {
+            clickedNode = nodes.get(nodeID)
+            Vue.set(info, 'content', JSON.parse(JSON.stringify(clickedNode)))
+            tmp_node = copy_object(clickedNode)
+            Vue.delete(tmp_node, 'id')
+            Vue.set(node_control, 'cur_node', tmp_node)
+            // set_object(node_control.clicked_node, clickedNode)
+            node_control.clicked_node = clickedNode
+        }
+
+        // for (key in clickedNode) {
+        //     if (attributes.indexOf(key) > -1)
+        //         continue;
+        //     if (key == "additional") {
+        //         for (ak in clickedNode[key]) {
+        //             node_control.cur_node[ak] = clickedNode[key][ak]
+        //         }
+        //     } else {
+        //         node_control.cur_node[key] = clickedNode[key]
+        //     }
+        // }
+    } else if (params.edges.length != 0) {
+        var edgeID = params.edges[0];
+        if (edgeID) {
+            clickedEdge = edges.get(edgeID);
+        }
+        Vue.set(info, 'content', clickedEdge)
+        edge_control.$set(edge_control.selected_edge, "src", nodes.get(clickedEdge.from))
+        edge_control.$set(edge_control.selected_edge, "dst", nodes.get(clickedEdge.to))
+
+    } else {
+        console.log("blank space clicked")
+        initialize_node_control_panel()
+    }
 }
 
 function addNode(in_node) {

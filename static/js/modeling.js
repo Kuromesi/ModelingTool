@@ -3,8 +3,9 @@ ontology = {
         node_id: "",
         name: "",
         description: "",
+        type: "",
         color: "#ff0000",
-        shape: "",
+        // shape: "",
         linked_graph: "",
         is_entry: false,
         additional: {}
@@ -26,45 +27,6 @@ var attributes = ['label', 'id', 'shape', 'size', 'title'];
 
 function copy_object(object) {
     return JSON.parse(JSON.stringify(object))
-}
-
-function network_click(params) {
-    if (params.nodes.length != 0) {
-        var nodeID = params.nodes[0];
-        if (nodeID) {
-            clickedNode = nodes.get(nodeID)
-            Vue.set(info, 'content', JSON.parse(JSON.stringify(clickedNode)))
-            tmp_node = copy_object(clickedNode)
-            Vue.delete(tmp_node, 'id')
-            Vue.set(node_control, 'cur_node', tmp_node)
-            // set_object(node_control.clicked_node, clickedNode)
-            node_control.clicked_node = clickedNode
-        }
-
-        // for (key in clickedNode) {
-        //     if (attributes.indexOf(key) > -1)
-        //         continue;
-        //     if (key == "additional") {
-        //         for (ak in clickedNode[key]) {
-        //             node_control.cur_node[ak] = clickedNode[key][ak]
-        //         }
-        //     } else {
-        //         node_control.cur_node[key] = clickedNode[key]
-        //     }
-        // }
-    } else if (params.edges.length != 0) {
-        var edgeID = params.edges[0];
-        if (edgeID) {
-            clickedEdge = edges.get(edgeID);
-        }
-        Vue.set(info, 'content', clickedEdge)
-        edge_control.$set(edge_control.selected_edge, "src", nodes.get(clickedEdge.from))
-        edge_control.$set(edge_control.selected_edge, "dst", nodes.get(clickedEdge.to))
-
-    } else {
-        console.log("blank space clicked")
-        initialize_node_control_panel()
-    }
 }
 
 function initialize_node_control_panel() {
@@ -97,8 +59,9 @@ node_control = new Vue({
             node_id: "",
             name: "",
             description: "",
+            type: "",
             color: "#ff0000",
-            shape: "",
+            // shape: "",
             linked_graph: "",
             is_entry: false,
             additional: {}
@@ -126,8 +89,8 @@ node_control = new Vue({
             if (network) {
                 addNode(node);
             } else {
-                network = drawGraph([node], [{}])
-                network.on('click', network_click)
+                drawGraph([node], [{}])
+                // network.on('click', network_click)
             }
             // this.cur_node = JSON.parse(JSON.stringify(ontology.node))
             initialize_node_control_panel()
@@ -287,8 +250,8 @@ project_control = new Vue({
         load_graph(file) {
             project_control.cur_graph = file;
             graph = this.graphs[file]
-            network = drawGraph(graph.nodes, graph.edges);
-            network.on('click', network_click);
+            drawGraph(graph.nodes, graph.edges);
+            // network.on('click', network_click);
         },
         import_graph(graph) {
             console.log("import graph " + graph)
@@ -344,8 +307,8 @@ project_control = new Vue({
             this.project_name = ""
         },
         new_graph() {
-            network = drawGraph([], [{}])
-            network.on('click', network_click)
+            drawGraph([], [{}])
+            // network.on('click', network_click)
         },
         upper_folder() {
             this.cur_path = ""

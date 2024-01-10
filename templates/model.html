@@ -106,16 +106,23 @@
 
 <div class="container" id="network-container">
     <div class="row" style="height: 400px;">
-        <div class="col-sm-9" id="mynetwork" @click="click"></div>
-        <div class="col-sm-3" id="network_info">
-            <h1>Information</h1>
-            <div>
-                <div v-for="(v, k) in content">
-                    <h2>{[ k ]}</h2>
-                    <p>{[ v ]}</p>
+        <div class="col-sm-8" ref="my_network" id="mynetwork" @click="click"></div>
+        <div class="col-sm-4" id="network_info">
+            <button @click="switch_panel()" class="btn btn-outline-primary">Switch Panel</button>
+            <div class="container" v-show="display_panel == 'information'">
+                <h1>Information</h1>
+                <div>
+                    <div v-for="(v, k) in content">
+                        <h2>{[ k ]}</h2>
+                        <p>{[ v ]}</p>
+                    </div>
                 </div>
             </div>
+            <div class="container" v-show="display_panel == 'configuration'">
+                <div id="configure_panel"></div>
+            </div>
         </div>
+        
     </div>
 </div>
 <div class="container mt-3" id="control-panel-container">
@@ -128,6 +135,10 @@
             <div class="container">
                 <label>Name</label>
                 <input class="form-control" type="text" name="name" v-model="cur_node['name']">
+            </div>
+            <div class="container">
+                <label>Type</label>
+                <input class="form-control" type="text" name="name" v-model="cur_node['type']">
             </div>
             <div class="container">
                 <label>Description</label>
