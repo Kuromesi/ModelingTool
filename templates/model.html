@@ -1,9 +1,9 @@
 {% extends 'base.html' %}
 
 {% block script %}
-<!-- <script src="https://cdn.staticfile.org/jquery/1.10.2/jquery.min.js"></script> -->
 <script src="https://cdn.bootcdn.net/ajax/libs/vue/2.7.0/vue.min.js"></script>
 <script src="https://cdn.bootcdn.net/ajax/libs/axios/1.5.0/axios.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/screenfull.js/5.2.0/screenfull.min.js"></script>
 <script src="{{ url_for('static',filename='js/utils.js') }}"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js"
     integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ=="
@@ -104,10 +104,10 @@
 {% endblock %}
 {% block content %}
 
-<div class="container" id="network-container">
+<div class="container" id="network_control">
     <div class="row" style="height: 400px;">
-        <div class="col-sm-8" ref="my_network" id="mynetwork" @click="click"></div>
-        <div class="col-sm-4" id="network_control">
+        <div class="col-sm-8" ref="my_network" id="mynetwork"></div>
+        <div class="col-sm-4">
             <div class="dropdown col-md-2">
                 <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown">
                     {[ display_panel ]}
@@ -142,6 +142,7 @@
             </div>
         </div>
     </div>
+    <button @click="fullScreen()" class="btn btn-outline-primary">fullscreen</button>
 </div>
 <div class="container mt-3" id="control-panel-container">
     <div class="row" id="control-panel">

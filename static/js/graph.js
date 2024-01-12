@@ -26,76 +26,89 @@ var info = new Vue({
     },
     methods: {
         switch_panel(panel) {
+            console.log(this.$refs)
             this.display_panel = panel
         },
+        initializeGraph(in_nodes, in_edges) {
+            container = this.$refs.my_network;
+            // parsing and collecting nodes and edges from the python
+            
+            nodes = new vis.DataSet(in_nodes);
+            edges = new vis.DataSet(in_edges);
+            nodeColors = {};
+            allNodes = nodes.get({
+                returnType: "Object"
+            });
+            for (nodeId in allNodes) {
+                nodeColors[nodeId] = allNodes[nodeId].color;
+            }
+            allEdges = edges.get({
+                returnType: "Object"
+            });
+            // adding nodes and edges to the graph
+            data = {
+                nodes: nodes,
+                edges: edges
+            };
+        
+            var options = {
+                "configure": {
+                    "enabled": true,
+                    "container": document.getElementById('configure_panel')
+                },
+                "edges": {
+                    "color": {
+                        "inherit": true
+                    },
+                    "smooth": {
+                        "enabled": true,
+                        "type": "dynamic"
+                    }
+                },
+                "interaction": {
+                    "dragNodes": true,
+                    "hideEdgesOnDrag": false,
+                    "hideNodesOnDrag": false
+                },
+            };
+            network = new vis.Network(container, data, options);
+            network.on('click', network_click)
+            console.log("network initialized")
+        },
+        toFullscreen(element) {
+            //全屏
+            if (element.requestFullscreen) {
+                element.requestFullscreen()
+            }
+            //兼容Firefox全屏
+            else if (element.mozRequestFullScreen) {
+                element.mozRequestFullScreen()
+            }
+            //兼容Chrome Safari Opera全屏
+            else if (element.webkitRequestFullscreen) {
+                element.webkitRequestFullscreen()
+            }
+            //兼容IE Edge全屏
+            else if (element.msRequestFullscreen) {
+                element.msRequestFullscreen()
+            }
+        },
+        fullScreen() {
+            this.fullBoolean = true
+            //获取需要全屏的元素
+            let full = this.$refs.my_network
+            //开启全屏方法
+            this.toFullscreen(full)
+        }
     }
 })
-initializeGraph([], [])
+info.initializeGraph([], [])
 
 function drawGraph(in_nodes, in_edges) {
     nodes = new vis.DataSet(in_nodes);
     edges = new vis.DataSet(in_edges);
     network.setData({nodes: nodes, edges: edges})
     console.log("successfully update network")
-}
-
-// This method is responsible for drawing the graph, returns the drawn network
-function initializeGraph(in_nodes, in_edges) {
-    var container = document.getElementById('mynetwork');
-    // parsing and collecting nodes and edges from the python
-    
-    nodes = new vis.DataSet(in_nodes);
-    edges = new vis.DataSet(in_edges);
-    nodeColors = {};
-    allNodes = nodes.get({
-        returnType: "Object"
-    });
-    for (nodeId in allNodes) {
-        nodeColors[nodeId] = allNodes[nodeId].color;
-    }
-    allEdges = edges.get({
-        returnType: "Object"
-    });
-    // adding nodes and edges to the graph
-    data = {
-        nodes: nodes,
-        edges: edges
-    };
-
-    var options = {
-        "configure": {
-            "enabled": true,
-            "container": document.getElementById('configure_panel')
-        },
-        "edges": {
-            "color": {
-                "inherit": true
-            },
-            "smooth": {
-                "enabled": true,
-                "type": "dynamic"
-            }
-        },
-        "interaction": {
-            "dragNodes": true,
-            "hideEdgesOnDrag": false,
-            "hideNodesOnDrag": false
-        },
-        // "physics": {
-        //     "enabled": false,
-        //     "stabilization": {
-        //         "enabled": true,
-        //         "fit": true,
-        //         "iterations": 1000,
-        //         "onlyDynamicEdges": false,
-        //         "updateInterval": 50
-        //     }
-        // }
-    };
-    network = new vis.Network(container, data, options);
-    network.on('click', network_click)
-    console.log("network initialized")
-    return network;
 }
 
 function network_click(params) {
@@ -110,18 +123,6 @@ function network_click(params) {
             // set_object(node_control.clicked_node, clickedNode)
             node_control.clicked_node = clickedNode
         }
-
-        // for (key in clickedNode) {
-        //     if (attributes.indexOf(key) > -1)
-        //         continue;
-        //     if (key == "additional") {
-        //         for (ak in clickedNode[key]) {
-        //             node_control.cur_node[ak] = clickedNode[key][ak]
-        //         }
-        //     } else {
-        //         node_control.cur_node[key] = clickedNode[key]
-        //     }
-        // }
     } else if (params.edges.length != 0) {
         var edgeID = params.edges[0];
         if (edgeID) {
