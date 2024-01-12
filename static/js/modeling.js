@@ -314,20 +314,35 @@ project_control = new Vue({
             this.cur_path = ""
             this.list_files("")
         },
-        delete_project() {
-            var url = "/model/delete_project"
+        delete_project(project_name) {
+            console.log("deleting project: " + project_name)
+            var url = "/model/delete"
             axios({
                 method: 'post',
                 url: url,
-                data: { "project_name": this.project_name }
+                data: { "project_name": project_name, "deletion_type": "project" }
             }).then(function (res) {
                 
                 console.log(res.data)
             })
-            if (this.project_name in this.files) {
-                this.$delete(this.files, this.project_name)
+            if (project_name in this.files) {
+                this.$delete(this.files, project_name)
             }
             this.project_name = ""
+        },
+        delete_graph(graph_name) {
+            console.log("deleting graph: " + graph_name)
+            var url = "/model/delete"
+            axios({
+                method: 'post',
+                url: url,
+                data: { "project_name": project_control.cur_project, "graph_name": graph_name, "deletion_type": "graph" }
+            }).then(function (res) {
+                console.log(res.data)
+            })
+            Vue.delete(project_control.graphs, graph_name)
+            Vue.delete(project_control.files, graph_name)
+            Vue.delete(node_control.entry_list, graph_name)
         }
     }
 })

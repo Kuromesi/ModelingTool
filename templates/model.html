@@ -1,9 +1,9 @@
 {% extends 'base.html' %}
 
 {% block script %}
-<script src="https://cdn.staticfile.org/jquery/1.10.2/jquery.min.js"></script>
-<script src="https://cdn.staticfile.org/vue/2.7.0/vue.min.js"></script>
-<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<!-- <script src="https://cdn.staticfile.org/jquery/1.10.2/jquery.min.js"></script> -->
+<script src="https://cdn.bootcdn.net/ajax/libs/vue/2.7.0/vue.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/axios/1.5.0/axios.min.js"></script>
 <script src="{{ url_for('static',filename='js/utils.js') }}"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js"
     integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ=="
@@ -107,22 +107,40 @@
 <div class="container" id="network-container">
     <div class="row" style="height: 400px;">
         <div class="col-sm-8" ref="my_network" id="mynetwork" @click="click"></div>
-        <div class="col-sm-4" id="network_info">
-            <button @click="switch_panel()" class="btn btn-outline-primary">Switch Panel</button>
-            <div class="container" v-show="display_panel == 'information'">
-                <h1>Information</h1>
-                <div>
-                    <div v-for="(v, k) in content">
-                        <h2>{[ k ]}</h2>
-                        <p>{[ v ]}</p>
+        <div class="col-sm-4" id="network_control">
+            <div class="dropdown col-md-2">
+                <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown">
+                    {[ display_panel ]}
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" v-for="panel in network_control_panel_list"
+                            @click="switch_panel(panel)">{[ panel ]}</a></li>
+                </ul>
+            </div>
+            <div class="container mt-3" style="overflow-y: auto; height: 350px;">
+                <div class="container" v-show="display_panel == 'information'">
+                    <h1>Information</h1>
+                    <div>
+                        <div v-for="(v, k) in content">
+                            <h2>{[ k ]}</h2>
+                            <p>{[ v ]}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="container" v-show="display_panel == 'configuration'">
+                    <div id="configure_panel"></div>
+                </div>
+                <div class="container" v-show="display_panel == 'calculation'">
+                    <div class="row">
+                        <div class="container col-md-8">
+                            <input class="form-control col" type="text" name="resilience" required readonly
+                                    value="resilience">
+                        </div>
+                        <button class="btn btn-outline-primary col-md-4">Calculate</button>
                     </div>
                 </div>
             </div>
-            <div class="container" v-show="display_panel == 'configuration'">
-                <div id="configure_panel"></div>
-            </div>
         </div>
-        
     </div>
 </div>
 <div class="container mt-3" id="control-panel-container">
@@ -305,27 +323,28 @@
         <div class="offcanvas-body" v-if="cur_path == ''">
             <h3>Local Projects</h3>
             <div class="pre-scrollable" style="max-height: 60%;">
-                <div :id="k" v-for="v, k in files">
-                    <p id="file_link" @click="list_files(k)">{[ k ]}</p>
+                <div class="row" :id="k" v-for="v, k in files">
+                    <p class="col-md-8" id="file_link">{[ k ]}</p>
+                    <button type="button" class="btn btn-outline-primary col-md-2" @click="list_files(k)">Open</button>
+                    <button type="button" class="btn btn-outline-primary col-md-2" @click="delete_project(k)">Delete</button>
                 </div>
             </div>
             <input type="text" class="form-control mt-3" placeholder="PROJECT NAME" v-model="project_name">
             <button type="button" class="btn btn-outline-primary mt-3" @click="new_project">New Project</button>
-            <button type="button" class="btn btn-outline-primary mt-3" @click="delete_project">Delete Project</button>
         </div>
         <div class="offcanvas-body" v-else>
             <h3>Local Projects</h3>
             <div class="pre-scrollable" style="max-height: 60%;">
-                <div :id="k" v-for="v, k in files">
-                    <p id="file_link" @click="load_graph(k)">{[ k ]}</p>
+                <div class="row" :id="k" v-for="v, k in files">
+                    <p class="col-md-8" id="file_link">{[ k ]}</p>
+                    <button type="button" class="btn btn-outline-primary col-md-2" @click="load_graph(k)">Open</button>
+                    <button type="button" class="btn btn-outline-primary col-md-2" @click="delete_graph(k)">Delete</button>
                 </div>
             </div>
             <input type="text" class="form-control mt-3" placeholder="GRAPH NAME" v-model="cur_graph">
             <button type="button" class="btn btn-outline-primary mt-3" @click="save_graph">Save Graph</button>
             <button type="button" class="btn btn-outline-primary mt-3" @click="new_graph">New Graph</button>
-            <!-- <button type="button" class="btn btn-outline-primary mt-3" @click="load_project">Load Project</button> -->
             <button type="button" class="btn btn-outline-primary mt-3" @click="upper_folder">Back</button>
-
         </div>
     </div>
 </div>

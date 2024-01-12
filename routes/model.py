@@ -47,14 +47,29 @@ def model_new_project():
     projects = os.listdir('./projects')
     return projects
 
-@model.route('/delete_project', methods=['POST'])
-def model_delete_project():
+@model.route('/delete', methods=['POST'])
+def model_delete():
     data = json.loads(request.get_data())
-    path = data['project_name']
-    if not os.path.exists(os.path.join('./projects', path)):
-        return f"project {path} not found"
-    shutil.rmtree(os.path.join('./projects', path))
-    return f"project {path} deleted"
+    project = data['project_name']
+    if project == "":
+        return "project name cannot be empty"
+    if not os.path.exists(os.path.join('./projects', project)):
+            return f"project {project} not found"
+    if data['deletion_type'] == "project":
+        shutil.rmtree(os.path.join('./projects', project))
+        return f"project {project} deleted"
+    elif data['deletion_type'] == "graph":
+        graph = data['graph_name']
+        file_to_delete = os.path.join('./projects', project, graph)
+        if not os.path.exists(file_to_delete):
+            return f"graph {graph} not found in {project}"
+        try:
+            os.remove(file_to_delete)
+            return(f"graph {graph} deleted")
+        except Exception as e:
+            print(f"error deleting graph {graph}: {e}")
+    else:
+        return("invalid deletion type")
 
 # ma = ModelAnalyzer()
 @model.route('/analyze', methods=['POST'])

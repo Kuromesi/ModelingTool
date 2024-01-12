@@ -17,19 +17,16 @@ var filter = {
 
 // view node information
 var info = new Vue({
-    el: "#network_info",
+    el: "#network_control",
     delimiters:['{[', ']}'],
     data: {
         content: {},
-        display_panel: "information"
+        display_panel: "information",
+        network_control_panel_list: ["information", "configuration", "calculation"],
     },
     methods: {
-        switch_panel() {
-            if (this.display_panel == 'configuration') {
-                this.display_panel = 'information'
-            } else {
-                this.display_panel = 'configuration'
-            }
+        switch_panel(panel) {
+            this.display_panel = panel
         },
     }
 })
