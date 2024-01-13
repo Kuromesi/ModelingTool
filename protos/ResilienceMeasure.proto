@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+// The Dynamic Measure service definition.
+service ResilienceMeasure {
+  // Sends a greeting
+  rpc RunDynamicMeasure (DynamicMeasureRequest) returns (DynamicMeasureReply) {}
+}
+
+// The request message containing the user's name.
+message DynamicMeasureRequest {
+  string data = 1;
+}
+
+// The response message containing the greetings
+message DynamicMeasureReply {
+  string message = 1;
+}

@@ -312,6 +312,8 @@ project_control = new Vue({
         },
         upper_folder() {
             this.cur_path = ""
+            this.cur_project = ""
+            this.cur_graph = ""
             this.list_files("")
         },
         delete_project(project_name) {

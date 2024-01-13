@@ -3,10 +3,9 @@ import os
 from flask import Flask
 from flask import render_template, redirect
 from routes import *
+import yaml
 
 app = Flask(__name__)
-
-
 app.register_blueprint(model)
 
 @app.route('/', methods=['GET', 'POST'])

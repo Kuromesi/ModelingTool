@@ -1,6 +1,8 @@
 from flask import Blueprint
 from flask import request, render_template
 import json, os, shutil
+# from app import config
+
 
 model = Blueprint('model', __name__, url_prefix="/model")
 @model.route("/", methods=['GET'])
@@ -56,7 +58,10 @@ def model_delete():
     if not os.path.exists(os.path.join('./projects', project)):
             return f"project {project} not found"
     if data['deletion_type'] == "project":
-        shutil.rmtree(os.path.join('./projects', project))
+        try:
+            shutil.rmtree(os.path.join('./projects', project))
+        except Exception as e:
+            return f"error deleting project {project}: {e}"
         return f"project {project} deleted"
     elif data['deletion_type'] == "graph":
         graph = data['graph_name']
@@ -81,3 +86,15 @@ def load_graph(path: str) -> dict:
     with open(os.path.join(path), 'r', encoding='utf-8') as f:
         graph = json.load(f)
     return graph
+
+@model.route('/static', methods=['GET'])
+def generate_static_analyze_results():
+    headers = ["test", "test2"]
+    data = [[1, 2], [2, 3]]
+    return render_template('static_analyze_results.html', headers=headers, data=data)
+
+@model.route('/dynamic', methods=['GET'])
+def call_dynamic_measurer():
+    message = run()
+    return message
+    
