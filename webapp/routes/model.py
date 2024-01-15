@@ -2,6 +2,7 @@ from flask import Blueprint
 from flask import request, render_template
 import json, os, shutil
 from rpc.ResilienceMeaurer import ResilienceMeasurer
+from utils.gen_random_graph import gen_same_degree_graph
 
 
 model = Blueprint('model', __name__, url_prefix="/model")
@@ -102,3 +103,13 @@ def call_dynamic_measurer():
     data = [[1, 2], [2, 3]]
     return render_template('static_analyze_results.html', headers=headers, data=data)
     
+@model.route('/random-graph', methods=['POST'])
+def generate_random_graph():
+    data = json.loads(request.get_data())
+    nodes_num = int(data['nodes_num'])
+    degree = int(data['degree'])
+    try:
+        same_degree_graph = gen_same_degree_graph(nodes_num, degree)
+    except Exception as e:
+        return {'status': 500, 'msg': f"error generating graph: {e}"}
+    return {'status': 200, 'graph': same_degree_graph, 'msg': "random graph successfully generated"}

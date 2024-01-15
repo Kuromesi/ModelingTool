@@ -256,15 +256,19 @@ project_control = new Vue({
         import_graph(graph) {
             console.log("import graph " + graph)
             node_id_map = {}
-            for (i = 0; i < this.graphs[graph].nodes.length; i++) { 
-                node = this.graphs[graph].nodes[i]
+            this._import_graph(this.graphs[graph])
+        },
+        _import_graph(graph) {
+            node_id_map = {}
+            for (i = 0; i < graph.nodes.length; i++) { 
+                node = graph.nodes[i]
                 old_id = node.id
                 Vue.delete(node, "id")
                 new_id = addNode(node)
                 node_id_map[old_id] = new_id[0]
             }
-            for (i = 0; i < this.graphs[graph].edges.length; i++) {
-                edge = this.graphs[graph].edges[i]
+            for (i = 0; i < graph.edges.length; i++) {
+                edge = graph.edges[i]
                 edge.from = node_id_map[edge.from]
                 edge.to = node_id_map[edge.to]
                 Vue.delete(edge, "id")

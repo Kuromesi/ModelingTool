@@ -24,7 +24,11 @@ var network_control = new Vue({
         display_panel: "information",
         network_control_panel_list: ["information", "configuration", "calculation"],
         static_resilience_value: 0,
-        dynamic_url: ""
+        dynamic_url: "",
+        random_graph: {
+            nodes_num: 0,
+            degree: 0
+        }
     },
     methods: {
         switch_panel(panel) {
@@ -123,6 +127,25 @@ var network_control = new Vue({
             console.log(JSON.stringify(nodes.get()))
             project_control.save_graph()
         },
+        generate_random_graph() {
+            console.log("generating random graph")
+            var url = "/model/random-graph";
+            axios({
+                method: 'post',
+                url: url,
+                data: { "nodes_num": this.random_graph.nodes_num, "degree": this.random_graph.degree }
+            }).then(function (res) {
+                response = res.data
+                console.log(response.msg)
+                if (response.status == 200) {
+                    drawGraph([], [{}])
+                    project_control._import_graph(response.graph)
+                }
+                else if (response.status == 500) {
+                    alert("invalid graph attributes")
+                }
+            })
+        }
     }
 })
 network_control.initializeGraph([], [])
