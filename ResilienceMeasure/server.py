@@ -7,7 +7,12 @@ import os
 
 class Measurer(ResilienceMeasure_pb2_grpc.ResilienceMeasureServicer):
     def RunDynamicMeasure(self, request, context):
-        return ResilienceMeasure_pb2.DynamicMeasureReply(message = 'hello {msg}'.format(msg = request.data))
+        measure_type = request.measureType
+        if measure_type == 1:
+            pass
+        elif measure_type == 2:
+            pass
+        return ResilienceMeasure_pb2.DynamicMeasureReply(message = 'successfully run measureType {msg}'.format(msg = measure_type))
 
 def serve():
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))

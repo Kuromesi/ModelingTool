@@ -8,7 +8,8 @@ service ResilienceMeasure {
 
 // The request message containing the user's name.
 message DynamicMeasureRequest {
-  string data = 1;
+  int32 measureType = 1;
+  string data = 2;
 }
 
 // The response message containing the greetings

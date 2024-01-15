@@ -13,3 +13,7 @@ docker-push: ## Push docker image with the webapp.
 
 webapp-start:
 	docker run -itd --rm -p ${WEBAPP_PORT}:4000 -v projects:/app/projects -v config.yaml:/app/config/config.yaml ${IMG}
+
+gen-protos:
+	python -m grpc_tools.protoc --python_out=ResilienceMeasure --grpc_python_out=ResilienceMeasure -I protos protos/ResilienceMeasure.proto
+	python -m grpc_tools.protoc --python_out=webapp/protos/ResilienceMeasure --grpc_python_out=webapp/protos/ResilienceMeasure -I protos protos/ResilienceMeasure.proto

@@ -4,6 +4,7 @@
 <script src="https://cdn.bootcdn.net/ajax/libs/vue/2.7.0/vue.min.js"></script>
 <script src="https://cdn.bootcdn.net/ajax/libs/axios/1.5.0/axios.min.js"></script>
 <script src="https://cdn.bootcdn.net/ajax/libs/screenfull.js/5.2.0/screenfull.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/vue-router/3.4.3/vue-router.min.js"></script>
 <script src="{{ url_for('static',filename='js/utils.js') }}"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js"
     integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ=="
@@ -131,18 +132,28 @@
                     <div id="configure_panel"></div>
                 </div>
                 <div class="container" v-show="display_panel == 'calculation'">
-                    <div class="row">
-                        <div class="container col-md-8">
-                            <input class="form-control col" type="text" name="resilience" required readonly
-                                    value="resilience">
+                    <div class="container">
+                        <label>Static Resilience</label>
+                        <div class="row">
+                            <div class="container col-md-8">
+                                <input class="form-control col" type="text" name="resilience" required readonly
+                                    :value="static_resilience_value">
+                            </div>
+                            <button class="btn btn-outline-primary col-md-4" @click="calculate_static_resilience">Calculate</button>
                         </div>
-                        <button class="btn btn-outline-primary col-md-4">Calculate</button>
+                    </div>
+                    <div class="container mt-3">
+                        <div>
+                            <label>Dynamic Resilience</label>
+                        </div>
+                        <button class="btn btn-outline-primary w-100" @click="calculate_dynamic_resilience">Calculate</button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
     <button @click="fullScreen()" class="btn btn-outline-primary">fullscreen</button>
+    <button @click="save_node_position()" class="btn btn-outline-primary">Save Position</button>
 </div>
 <div class="container mt-3" id="control-panel-container">
     <div class="row" id="control-panel">
@@ -327,7 +338,8 @@
                 <div class="row" :id="k" v-for="v, k in files">
                     <p class="col-md-8" id="file_link">{[ k ]}</p>
                     <button type="button" class="btn btn-outline-primary col-md-2" @click="list_files(k)">Open</button>
-                    <button type="button" class="btn btn-outline-primary col-md-2" @click="delete_project(k)">Delete</button>
+                    <button type="button" class="btn btn-outline-primary col-md-2"
+                        @click="delete_project(k)">Delete</button>
                 </div>
             </div>
             <input type="text" class="form-control mt-3" placeholder="PROJECT NAME" v-model="project_name">
@@ -339,7 +351,8 @@
                 <div class="row" :id="k" v-for="v, k in files">
                     <p class="col-md-8" id="file_link">{[ k ]}</p>
                     <button type="button" class="btn btn-outline-primary col-md-2" @click="load_graph(k)">Open</button>
-                    <button type="button" class="btn btn-outline-primary col-md-2" @click="delete_graph(k)">Delete</button>
+                    <button type="button" class="btn btn-outline-primary col-md-2"
+                        @click="delete_graph(k)">Delete</button>
                 </div>
             </div>
             <input type="text" class="form-control mt-3" placeholder="GRAPH NAME" v-model="cur_graph">

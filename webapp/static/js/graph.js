@@ -16,13 +16,15 @@ var filter = {
 };
 
 // view node information
-var info = new Vue({
+var network_control = new Vue({
     el: "#network_control",
     delimiters:['{[', ']}'],
     data: {
         content: {},
         display_panel: "information",
         network_control_panel_list: ["information", "configuration", "calculation"],
+        static_resilience_value: 0,
+        dynamic_url: ""
     },
     methods: {
         switch_panel(panel) {
@@ -99,10 +101,31 @@ var info = new Vue({
             let full = this.$refs.my_network
             //开启全屏方法
             this.toFullscreen(full)
-        }
+        },
+        calculate_static_resilience() {
+            console.log("calculating static resilience")
+            this.static_resilience_value = edges.length / nodes.length
+        },
+        calculate_dynamic_resilience() {
+            console.log("calculating static resilience")
+            this.dynamic_url = "static"
+            window.location.href = "static?test=1"
+            // var url = "/model/dynamic";
+            // axios({
+            //     method: 'get',
+            //     url: url,
+            // }).then(function (res) {
+            //     console.log(res.data);
+            // })
+        },
+        save_node_position() {
+            network.storePositions()
+            console.log(JSON.stringify(nodes.get()))
+            project_control.save_graph()
+        },
     }
 })
-info.initializeGraph([], [])
+network_control.initializeGraph([], [])
 
 function drawGraph(in_nodes, in_edges) {
     nodes = new vis.DataSet(in_nodes);
@@ -116,7 +139,7 @@ function network_click(params) {
         var nodeID = params.nodes[0];
         if (nodeID) {
             clickedNode = nodes.get(nodeID)
-            Vue.set(info, 'content', JSON.parse(JSON.stringify(clickedNode)))
+            Vue.set(network_control, 'content', JSON.parse(JSON.stringify(clickedNode)))
             tmp_node = copy_object(clickedNode)
             Vue.delete(tmp_node, 'id')
             Vue.set(node_control, 'cur_node', tmp_node)
@@ -128,7 +151,7 @@ function network_click(params) {
         if (edgeID) {
             clickedEdge = edges.get(edgeID);
         }
-        Vue.set(info, 'content', clickedEdge)
+        Vue.set(network_control, 'content', clickedEdge)
         edge_control.$set(edge_control.selected_edge, "src", nodes.get(clickedEdge.from))
         edge_control.$set(edge_control.selected_edge, "dst", nodes.get(clickedEdge.to))
 

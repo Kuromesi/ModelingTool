@@ -31,7 +31,7 @@ function copy_object(object) {
 
 function initialize_node_control_panel() {
     Vue.set(node_control, "cur_node", JSON.parse(JSON.stringify(ontology)))
-    Vue.set(info, "content", {})
+    Vue.set(network_control, "content", {})
     Vue.set(node_control, "cur_node", copy_object(ontology.node))
     Vue.set(node_control, "clicked_node", {})
 
@@ -293,6 +293,10 @@ project_control = new Vue({
         },
         new_project() {
             var url = "/model/new_project"
+            if (this.project_name == "") {
+                alert("project name cannot be null")
+                return
+            }
             axios({
                 method: 'post',
                 url: url,

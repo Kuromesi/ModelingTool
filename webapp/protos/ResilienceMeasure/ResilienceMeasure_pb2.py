@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x17ResilienceMeasure.proto\"%\n\x15\x44ynamicMeasureRequest\x12\x0c\n\x04\x64\x61ta\x18\x01 \x01(\t\"&\n\x13\x44ynamicMeasureReply\x12\x0f\n\x07message\x18\x01 \x01(\t2X\n\x11ResilienceMeasure\x12\x43\n\x11RunDynamicMeasure\x12\x16.DynamicMeasureRequest\x1a\x14.DynamicMeasureReply\"\x00\x62\x06proto3'
+  serialized_pb=b'\n\x17ResilienceMeasure.proto\":\n\x15\x44ynamicMeasureRequest\x12\x13\n\x0bmeasureType\x18\x01 \x01(\x05\x12\x0c\n\x04\x64\x61ta\x18\x02 \x01(\t\"&\n\x13\x44ynamicMeasureReply\x12\x0f\n\x07message\x18\x01 \x01(\t2X\n\x11ResilienceMeasure\x12\x43\n\x11RunDynamicMeasure\x12\x16.DynamicMeasureRequest\x1a\x14.DynamicMeasureReply\"\x00\x62\x06proto3'
 )
 
 
@@ -34,8 +34,15 @@ _DYNAMICMEASUREREQUEST = _descriptor.Descriptor(
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='data', full_name='DynamicMeasureRequest.data', index=0,
-      number=1, type=9, cpp_type=9, label=1,
+      name='measureType', full_name='DynamicMeasureRequest.measureType', index=0,
+      number=1, type=5, cpp_type=1, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='data', full_name='DynamicMeasureRequest.data', index=1,
+      number=2, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -53,7 +60,7 @@ _DYNAMICMEASUREREQUEST = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=27,
-  serialized_end=64,
+  serialized_end=85,
 )
 
 
@@ -84,8 +91,8 @@ _DYNAMICMEASUREREPLY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=66,
-  serialized_end=104,
+  serialized_start=87,
+  serialized_end=125,
 )
 
 DESCRIPTOR.message_types_by_name['DynamicMeasureRequest'] = _DYNAMICMEASUREREQUEST
@@ -115,8 +122,8 @@ _RESILIENCEMEASURE = _descriptor.ServiceDescriptor(
   index=0,
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_start=106,
-  serialized_end=194,
+  serialized_start=127,
+  serialized_end=215,
   methods=[
   _descriptor.MethodDescriptor(
     name='RunDynamicMeasure',

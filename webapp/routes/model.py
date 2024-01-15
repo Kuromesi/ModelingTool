@@ -1,10 +1,12 @@
 from flask import Blueprint
 from flask import request, render_template
 import json, os, shutil
-# from app import config
+from rpc.ResilienceMeaurer import ResilienceMeasurer
 
 
 model = Blueprint('model', __name__, url_prefix="/model")
+rm = ResilienceMeasurer()
+
 @model.route("/", methods=['GET'])
 def model_page():
     return render_template("model.html")
@@ -95,6 +97,8 @@ def generate_static_analyze_results():
 
 @model.route('/dynamic', methods=['GET'])
 def call_dynamic_measurer():
-    message = run()
-    return message
+    message = rm.run_dynamic_measure()
+    headers = ["test", "test2"]
+    data = [[1, 2], [2, 3]]
+    return render_template('static_analyze_results.html', headers=headers, data=data)
     
