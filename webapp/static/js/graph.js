@@ -27,8 +27,13 @@ var network_control = new Vue({
         dynamic_url: "",
         random_graph: {
             nodes_num: 0,
-            degree: 0
-        }
+            degree: 0,
+            color: "#ff0000",
+            edge_type: "undirected"
+        },
+        graph_list: {},
+        compare_results: {},
+        plan_name: "",
     },
     methods: {
         switch_panel(panel) {
@@ -107,13 +112,21 @@ var network_control = new Vue({
             this.toFullscreen(full)
         },
         calculate_static_resilience() {
-            console.log("calculating static resilience")
-            this.static_resilience_value = edges.length / nodes.length
+            console.log("calculating static resilience: " + project_control.cur_project + project_control.cur_graph)
+            var url = "/model/static";
+            axios({
+                method: 'post',
+                url: url,
+                data: project_control.graphs[project_control.cur_graph]
+            }).then(function (res) {
+                console.log("received resilience: " + res.data);
+                network_control.static_resilience_value = res.data
+            })
         },
         calculate_dynamic_resilience() {
             console.log("calculating static resilience")
             this.dynamic_url = "static"
-            window.location.href = "static?test=1"
+            // window.location.href = "static?test=1,2,3,4"
             // var url = "/model/dynamic";
             // axios({
             //     method: 'get',
@@ -122,6 +135,17 @@ var network_control = new Vue({
             //     console.log(res.data);
             // })
         },
+        run_command(command) {
+            console.log("calculating static resilience")
+            var url = "/model/dynamic";
+            axios({
+                method: 'post',
+                url: url,
+                data: {'command': command}
+            }).then(function (res) {
+                console.log(res.data);
+            })
+        },
         save_node_position() {
             network.storePositions()
             console.log(JSON.stringify(nodes.get()))
@@ -129,11 +153,12 @@ var network_control = new Vue({
         },
         generate_random_graph() {
             console.log("generating random graph")
+            this.$router.push('/static');
             var url = "/model/random-graph";
             axios({
                 method: 'post',
                 url: url,
-                data: { "nodes_num": this.random_graph.nodes_num, "degree": this.random_graph.degree }
+                data: { "nodes_num": this.random_graph.nodes_num, "degree": this.random_graph.degree, "color": this.random_graph.color, "edge_type": this.random_graph.edge_type  }
             }).then(function (res) {
                 response = res.data
                 console.log(response.msg)
@@ -144,6 +169,40 @@ var network_control = new Vue({
                 else if (response.status == 500) {
                     alert("invalid graph attributes")
                 }
+            })
+        },
+        set_edge_type(edge_type) {
+            this.random_graph.edge_type = edge_type
+        },
+        add_plan() {
+            Vue.set(this.compare_results, this.plan_name, {
+                "attack1": "",
+                "attack2": "",
+                "attack3": ""
+            })
+            this.plan_name = ""
+        },
+        set_attack(key, attack, graph_name) {
+            this.compare_results[key][attack] = graph_name
+        },
+        generate_compare_results() {
+            console.log("generating compare results")
+            var url = "/model/compare";
+            compare_results = {}
+            for (key in this.compare_results) {
+                compare_results[key] = {}
+                compare_results[key]['attack1'] = project_control.graphs[this.compare_results[key]['attack1']]
+                compare_results[key]['attack2'] = project_control.graphs[this.compare_results[key]['attack2']]
+                compare_results[key]['attack3'] = project_control.graphs[this.compare_results[key]['attack3']]
+            }
+            axios({
+                method: 'post',
+                url: url,
+                data: compare_results
+            }).then(function (res) {
+                response = res.data
+                console.log(response)
+                window.location.href = "compare"
             })
         }
     }

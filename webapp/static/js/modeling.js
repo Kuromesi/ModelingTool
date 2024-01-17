@@ -7,6 +7,9 @@ ontology = {
         color: "#ff0000",
         // shape: "",
         linked_graph: "",
+        beta: "1",
+        sigma: "1",
+        hetero: "1",
         is_entry: false,
         additional: {}
     },
@@ -62,6 +65,9 @@ node_control = new Vue({
             type: "",
             color: "#ff0000",
             // shape: "",
+            beta: "1",
+            sigma: "1",
+            hetero: "1",
             linked_graph: "",
             is_entry: false,
             additional: {}
@@ -223,6 +229,8 @@ project_control = new Vue({
                 }).then(function (res) {
                     alert(res.data);
                     project_control.$set(project_control.graphs, project_control.cur_graph, data)
+                    Vue.set(node_control.graph_list, project_control.cur_graph, data)
+                    Vue.set(network_control.graph_list, project_control.cur_graph, data)
                     Vue.set(project_control.files, project_control.cur_graph, {})
                     Vue.set(node_control.entry_list, project_control.cur_graph, {})
                     update_entry_list(project_control.graphs[project_control.cur_graph], node_control.entry_list, project_control.cur_graph)
@@ -241,9 +249,10 @@ project_control = new Vue({
                 url: url,
                 data: { "cur_path": this.cur_path }
             }).then(function (res) {
+                files = res.data.files
                 Vue.set(project_control, "files", {})
-                for (i = 0; i < res.data.length; i++) {
-                    Vue.set(project_control.files, res.data[i], {})
+                for (i = 0; i < files.length; i++) {
+                    Vue.set(project_control.files, files[i], {})
                 }
             })
         },
@@ -283,13 +292,14 @@ project_control = new Vue({
                 url: url,
                 data: { "cur_project": this.cur_project }
             }).then(function (res) {
-                project_control.graphs = res.data;
+                project_control.graphs = res.data.graphs;
                 // reset graph_list and entry_list
                 node_control.graph_list = {}
                 node_control.entry_list = {}
                 for (k in project_control.graphs) {
                     console.log("graphs loaded: " + k)
                     node_control.$set(node_control.graph_list, k, project_control.graphs[k])
+                    Vue.set(network_control.graph_list, k, project_control.graphs[k])
                     update_entry_list(project_control.graphs[k], node_control.entry_list, k)
                     Vue.set(edge_control, "entry_list", node_control.entry_list)
                 }
@@ -351,6 +361,8 @@ project_control = new Vue({
                 console.log(res.data)
             })
             Vue.delete(project_control.graphs, graph_name)
+            Vue.delete(node_control.graphs, graph_name)
+            Vue.delete(network_control.graphs, graph_name)
             Vue.delete(project_control.files, graph_name)
             Vue.delete(node_control.entry_list, graph_name)
         }

@@ -1,7 +1,7 @@
 import networkx as nx
 import matplotlib.pyplot as plt
 
-def gen_same_degree_graph(nodes_num: int, degree: int) -> dict:
+def gen_same_degree_graph(nodes_num: int, degree: int, color: str, edge_type: str) -> dict:
     random_graph = nx.random_regular_graph(d=degree, n=nodes_num)
     nodes = []
     edges = []
@@ -12,13 +12,25 @@ def gen_same_degree_graph(nodes_num: int, degree: int) -> dict:
             'name': node_id,
             'label': node_id,
             'title': node_id,
-            'color': "#ff0000"
+            'color': color
         })
+    if edge_type == "undirected":
+        arrows = ""
+    else:
+        arrows = "to"
     for edge in random_graph.edges(data=True):
         edges.append({
             'from': edge[0],
             'to': edge[1],
-            'smooth': False
+            'smooth': False,
+            'arrows': arrows
+        })
+        if edge_type == "bi-directed":
+            edges.append({
+            'to': edge[0],
+            'from': edge[1],
+            'smooth': False,
+            'arrows': arrows
         })
     return {
         'nodes': nodes,

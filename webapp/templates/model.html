@@ -132,9 +132,9 @@
                     <div id="configure_panel"></div>
                 </div>
                 <div class="container" v-show="display_panel == 'calculation'">
-                    <div class="container">
+                    <div class="container card">
                         <label>Static Resilience</label>
-                        <div class="row">
+                        <div class="container row">
                             <div class="container col-md-8">
                                 <input class="form-control col" type="text" name="resilience" required readonly
                                     :value="static_resilience_value">
@@ -142,13 +142,19 @@
                             <button class="btn btn-outline-primary col-md-4" @click="calculate_static_resilience">Calculate</button>
                         </div>
                     </div>
-                    <div class="container mt-3">
-                        <div>
-                            <label>Dynamic Resilience</label>
+                    <div class="container card mt-3">
+                        <div class="container">
+                            <label>Dynamic</label>
                         </div>
-                        <button class="btn btn-outline-primary w-100" @click="calculate_dynamic_resilience">Calculate</button>
+                        <button class="btn btn-outline-primary w-100" @click="run_command(1)">Run</button>
                     </div>
-                    <div class="container mt-3">
+                    <div class="container card mt-3">
+                        <div class="container">
+                            <label>UAV Simulation</label>
+                        </div>
+                        <button class="btn btn-outline-primary w-100" @click="run_command(2)">Run</button>
+                    </div>
+                    <div class="card container mt-3">
                         <div>
                             <label>Random Graph</label>
                         </div>
@@ -159,7 +165,84 @@
                             <div class="col-md-4">
                                 <input class="form-control col-md-4" type="text" placeholder="degree" v-model="random_graph.degree" required>
                             </div>
-                            <button class="btn btn-outline-primary col-md-4" @click="generate_random_graph">Generate</button>
+                        </div>
+                        <div class="container row">
+                            <div class="card col-md-9 mt-3">
+                                <p>Selected Color: </p>
+                                <input v-model="random_graph.color">
+                            </div>
+                            <div class="col-md-3">
+                                <input type="color" v-model="random_graph.color" class="form-control form-control-color">
+                            </div>
+                        </div>
+                        <div class="container row mt-3">
+                            <div class="dropdown col-md-6">
+                                <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown">
+                                    {[ random_graph.edge_type ]}
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" @click="set_edge_type('directed')">directed</a></li>
+                                    <li><a class="dropdown-item" @click="set_edge_type('undirected')">undirected</a></li>
+                                    <li><a class="dropdown-item" @click="set_edge_type('bi-directed')">bi-directed</a></li>
+                                </ul>
+                            </div>
+                            <button class="btn btn-outline-primary col-md-6" @click="generate_random_graph">Generate</button>
+                        </div>
+                    </div>
+                    <div class="card container mt-3">
+                        <div>
+                            <label>Compare Results</label>
+                        </div>
+                        <div v-for="(v, k) in compare_results">
+                            <label>{[ k ]}</label>
+                            <div class="container row">
+                                <div class="container col-md-6">
+                                    <label>attack1</label>
+                                </div>
+                                
+                                <div class="dropdown col-md-6">
+                                    <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown">
+                                        {[ v.attack1 ]}
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <li v-for="_, graph_name in graph_list"><a class="dropdown-item" @click="set_attack(k, 'attack1', graph_name)">{[ graph_name ]}</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="container row">
+                                <div class="container col-md-6">
+                                    <label>attack2</label>
+                                </div>
+                                
+                                <div class="dropdown col-md-6">
+                                    <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown">
+                                        {[ v.attack2 ]}
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <li v-for="_, graph_name in graph_list"><a class="dropdown-item" @click="set_attack(k, 'attack2', graph_name)">{[ graph_name ]}</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                            <div class="container row">
+                                <div class="container col-md-6">
+                                    <label>attack3</label>
+                                </div>
+                                
+                                <div class="dropdown col-md-6">
+                                    <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown">
+                                        {[ v.attack3 ]}
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <li v-for="_, graph_name in graph_list"><a class="dropdown-item" @click="set_attack(k, 'attack3', graph_name)">{[ graph_name ]}</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <input class="form-control" type="text" name="name" v-model="plan_name">
+                        <div class="container row">
+                            <button class="btn btn-outline-primary col-md-6" @click="add_plan">Add Plan</button>
+                            <button class="btn btn-outline-primary col-md-6" @click="generate_compare_results">Generate</button>
                         </div>
                     </div>
                 </div>
@@ -183,6 +266,20 @@
             <div class="container">
                 <label>Type</label>
                 <input class="form-control" type="text" name="name" v-model="cur_node['type']">
+            </div>
+            <div class="container row">
+                <div class="container col-md-4">
+                    <label>σ</label>
+                    <input class="form-control" type="text" name="name" v-model="cur_node['sigma']">
+                </div>
+                <div class="container col-md-4">
+                    <label>β</label>
+                    <input class="form-control" type="text" name="name" v-model="cur_node['beta']">
+                </div>
+                <div class="container col-md-4">
+                    <label>h</label>
+                    <input class="form-control" type="text" name="name" v-model="cur_node['hetero']">
+                </div>
             </div>
             <div class="container">
                 <label>Description</label>
