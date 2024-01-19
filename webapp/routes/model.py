@@ -118,6 +118,8 @@ def call_dynamic_measurer():
         run_command("")
     elif data['command'] == 2:
         run_command("")
+    elif data['command'] == 3:
+        run_command("")
     return "success"
     
 @model.route('/random-graph', methods=['POST'])
